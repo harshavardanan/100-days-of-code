@@ -11,7 +11,7 @@ def findAnagrams(strs):
             similar.append(output[i])
             for j in range(i+1, len(output)):
                 if output[i]==output[j]:
-                    ans.append(output[j])
+                    ans.append(output[i])
                 else:
                     ans.append(output[j])
             print(similar)
