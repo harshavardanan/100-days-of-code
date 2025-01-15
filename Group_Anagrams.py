@@ -17,6 +17,5 @@ def findAnagrams(strs):
             similar = []
     return ans
 
-
 print(findAnagrams(["act","pots","tops","cat","stop","hat"]))
 
