@@ -1,10 +1,12 @@
-def findAns(nums, k):
-    dict1 = {i:nums.count(i) for i in nums}
-    ans = []
-    for i in dict1.keys():
-        if dict1[i] >= k:
-            ans.append(i)
-    return ans
-
-print(findAns([2,3],1))
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        d = {i:nums.count(i) for i in nums}
+        sorted_items = sorted(d.items(), key=lambda item: item[1], reverse=True)
+        ans = []
+        for i in range(k):
+            ans.append(sorted_items[i][0])
+        return ans
+      
+# Example usage
+print(findAns([1,2,2,3,3,3], 2))  # Output: [2, 1]
 
