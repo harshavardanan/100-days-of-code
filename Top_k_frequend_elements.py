@@ -7,6 +7,5 @@ class Solution:
             ans.append(sorted_items[i][0])
         return ans
       
-# Example usage
-print(findAns([1,2,2,3,3,3], 2))  # Output: [2, 1]
+
 
