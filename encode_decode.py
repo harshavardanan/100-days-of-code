@@ -1,13 +1,20 @@
-def findAns(data):
-    if not data:
-        return ""
-    encodedString = ""
-    for i in data:
-        encodedString+=i+"+"
-    return decodeAns(encodedString[:-1])
+class Solution:
 
-def decodeAns(data):
-    if data == "":
-        return [data]
-    return data.split("+")
-print(findAns([""]))
+    def encode(self, strs: List[str]) -> str:
+        resStr = ""
+        for s in strs:
+            resStr+=str(len(s)) + "#" + s
+        return resStr
+
+    def decode(self, s: str) -> List[str]:
+        res = []
+        i = 0
+
+        while i < len(s):
+            j = i
+            while s[j] !="#":
+                j+=1
+            length = int(s[i:j])
+            res.append(s[j+1:j+1+length])
+            i = j+1+length
+        return res
