@@ -1,8 +1,10 @@
-class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        for start in range(0,len(nums)):
-            for end in range(1,len(nums)):
-                if start!=end:
-                    if nums[start]+nums[end] == target:
-                        return [start, end]
-        
+def twoSum(nums, target):
+    seen = {}
+    for i in range(len(nums)):
+        need = target - nums[i]
+        if need in seen:
+            return i, seen[need]
+        else:
+            seen[nums[i]] = i
+
+print(twoSum([1,2,3,4,5], 9))
