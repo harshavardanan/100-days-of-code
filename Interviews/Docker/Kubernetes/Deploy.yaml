@@ -1,0 +1,21 @@
+# Key-value pairs
+name: weather-app
+port: 3000
+active: true
+
+# Nested (indentation = hierarchy, always 2 spaces)
+container:
+  name: weather-app
+  image: node:18-alpine
+
+# Lists (dash = list item)
+ports:
+  - 3000
+  - 8080
+
+# List of objects
+env:
+  - name: API_KEY
+    value: abc123
+  - name: NODE_ENV
+    value: production
