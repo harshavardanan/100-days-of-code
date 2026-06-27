@@ -3,66 +3,110 @@
 ## What is the Sliding Window Technique?
 Sliding Window is a technique for solving problems on contiguous subarrays or substrings. Instead of recomputing from scratch each time, you maintain a window (a range defined by two pointers) and slide it across the input — adding one element on the right and optionally removing one on the left.
 
+---
+
 ## Two Types
 
 ### Fixed-size Window
-The window size `k` stays constant. Slide by moving both left and right pointers together.
+Window size `k` stays constant. Slide by moving both pointers together.
 ```python
-def max_sum_subarray(arr, k):
-    window_sum = sum(arr[:k])
-    max_sum = window_sum
-    for i in range(k, len(arr)):
-        window_sum += arr[i] - arr[i - k]
-        max_sum = max(max_sum, window_sum)
-    return max_sum
+left = 0
+window_sum = sum(arr[:k])
+
+for right in range(k, len(arr)):
+    window_sum += arr[right] - arr[left]   # add right, remove left
+    left += 1
+    # use window_sum here
 ```
 
 ### Variable-size Window
-The window grows and shrinks based on a condition. Use when you need the longest/shortest subarray meeting some constraint.
+Window grows and shrinks based on a condition.
 ```python
-def longest_subarray_with_condition(arr):
-    left = 0
-    result = 0
-    window_state = ...  # track what's inside the window
+left = 0
 
-    for right in range(len(arr)):
-        # expand: include arr[right] in window_state
+for right in range(len(arr)):
+    # expand: add arr[right] to window
 
-        while <window is invalid>:
-            # shrink: remove arr[left] from window_state
-            left += 1
+    while <window is invalid>:
+        # shrink: remove arr[left] from window
+        left += 1
 
-        result = max(result, right - left + 1)
-    return result
+    # window [left..right] is valid — record result
 ```
+
+---
 
 ## Core Operations
 
 | Step | Action | Time |
 |------|--------|------|
-| Expand window | Move `right` pointer | O(1) |
-| Shrink window | Move `left` pointer | O(1) |
-| Full pass | One traversal of input | O(n) |
+| Expand window | Move `right` pointer right | O(1) |
+| Shrink window | Move `left` pointer right | O(1) |
+| Full pass | Single traversal of input | O(n) |
+| Overall | O(n) — each element enters and exits the window once | O(n) |
 
-## Python — Useful Tools Inside a Window
+---
+
+## Built-in Methods Quick Reference
 ```python
-from collections import defaultdict
+from collections import defaultdict, Counter
 
-freq = defaultdict(int)   # character/element frequency in window
-freq[c] += 1              # add to window
-freq[c] -= 1              # remove from window
+# Track frequency inside window
+freq = defaultdict(int)
+freq[c] += 1              # add element to window
+freq[c] -= 1              # remove element from window
 if freq[c] == 0:
     del freq[c]           # clean up zero entries
+
+# Check window validity
+len(freq) <= k            # at most k distinct elements
+freq[c] == 0              # element no longer in window
+
+# Counter for static window comparison
+Counter(s[l:r]) == Counter(target)
+
+# Max/min of current window (use deque for O(1))
+from collections import deque
+dq = deque()              # monotonic deque for sliding window max
 ```
+
+---
+
+## Monotonic Deque (Sliding Window Maximum)
+```python
+from collections import deque
+
+def sliding_window_max(arr, k):
+    dq = deque()          # stores indices, decreasing order of values
+    result = []
+
+    for i, val in enumerate(arr):
+        while dq and arr[dq[-1]] < val:
+            dq.pop()
+        dq.append(i)
+
+        if dq[0] < i - k + 1:   # remove elements outside window
+            dq.popleft()
+
+        if i >= k - 1:
+            result.append(arr[dq[0]])
+    return result
+```
+
+---
 
 ## Common Patterns
 - **Fixed window sum/average** — sum or average of every k-element subarray
-- **Longest substring with constraint** — longest without repeating chars, at most k distinct chars
+- **Longest substring with constraint** — longest without repeating chars, at most k distinct
 - **Minimum window** — smallest window containing all target characters
-- **Max profit** — best time to buy and sell (expanding max, shrinking min)
+- **Max profit** — best time to buy and sell (track min price seen so far)
 - **Character replacement** — longest substring after at most k replacements
+- **Sliding window maximum** — max value in every k-size window using monotonic deque
 
-## When to Recognise It
-- Problem asks for a **subarray** or **substring**
-- Keywords: longest, shortest, maximum, minimum, contiguous
-- Brute force would be O(n²) — sliding window brings it to O(n)
+---
+
+## Interview Tips
+- Start with brute force O(n²), then ask: "can I avoid recomputing by maintaining a running state?"
+- Keywords that signal sliding window: *longest*, *shortest*, *maximum sum*, *contiguous*, *substring/subarray*
+- Use `defaultdict(int)` to track window contents — cleaner than regular dict
+- For sliding window max/min in O(n), always use a monotonic deque
