@@ -1,0 +1,702 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  h2.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  .cs-wrap { padding: 1rem 0; }
+
+  .cs-header { margin-bottom: 1.5rem; }
+  .cs-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .cs-sub { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+
+  .cs-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+  .cs-tab {
+    font-size: 12px; padding: 5px 12px; border-radius: 999px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    color: var(--color-text-secondary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cs-tab:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .cs-tab.active {
+    background: #1D9E75; border-color: #1D9E75; color: #fff;
+  }
+
+  .cs-search {
+    width: 100%; padding: 8px 12px; font-size: 14px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary); margin-bottom: 1.25rem;
+  }
+  .cs-search:focus { outline: none; border-color: #1D9E75; }
+
+  .cs-section { margin-bottom: 1.75rem; }
+  .cs-section-title {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--color-text-secondary);
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .cs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+
+  .cs-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    transition: border-color 0.15s;
+    cursor: default;
+  }
+  .cs-card:hover { border-color: var(--color-border-secondary); }
+
+  .cs-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .cs-card-tag {
+    font-size: 10px; font-weight: 500; padding: 2px 7px;
+    border-radius: 999px; white-space: nowrap;
+  }
+  .tag-core    { background: #E6F1FB; color: #0C447C; }
+  .tag-types   { background: #EEEDFE; color: #3C3489; }
+  .tag-fn      { background: #E1F5EE; color: #085041; }
+  .tag-generic { background: #FAEEDA; color: #633806; }
+  .tag-class   { background: #FAECE7; color: #4A1B0C; }
+  .tag-util    { background: #EAF3DE; color: #27500A; }
+  .tag-adv     { background: #FBEAF0; color: #4B1528; }
+  .tag-module  { background: #F1EFE8; color: #444441; }
+  .tag-async   { background: #E6F1FB; color: #0C447C; }
+
+  .cs-card-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+
+  .cs-card-desc { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 10px; line-height: 1.5; }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: 11.5px; line-height: 1.6;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 12px;
+    overflow-x: auto; white-space: pre;
+  }
+
+  .kw  { color: #534AB7; font-weight: 500; }
+  .ty  { color: #0F6E56; }
+  .str { color: #3B6D11; }
+  .cmt { color: var(--color-text-secondary); }
+  .fn  { color: #185FA5; }
+  .nm  { color: #BA7517; }
+
+  .no-results { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-size: 14px; }
+</style>
+
+<div class="cs-wrap">
+  <h2 class="sr-only">TypeScript cheatsheet — browse and search all major concepts with examples</h2>
+
+  <div class="cs-header">
+    <div class="cs-title">TypeScript Cheatsheet</div>
+    <div class="cs-sub">All major concepts with examples — search or filter by category</div>
+  </div>
+
+  <input class="cs-search" id="search" placeholder="Search concepts, e.g. union, generic, interface..." />
+
+  <div class="cs-tabs" id="tabs"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+const DATA = [
+  {
+    section: "Core Foundations",
+    tag: "core", tagLabel: "Core",
+    cards: [
+      { name: "Type Annotations", desc: "Explicitly label variables, parameters, and return types.",
+        code: `<kw>const</kw> name: <ty>string</ty> = <str>"Alice"</str>;
+<kw>const</kw> age: <ty>number</ty> = 30;
+<kw>const</kw> active: <ty>boolean</ty> = <kw>true</kw>;
+
+<kw>function</kw> <fn>greet</fn>(name: <ty>string</ty>): <ty>string</ty> {
+  <kw>return</kw> <str>\`Hello, \${name}\`</str>;
+}` },
+      { name: "Primitive Types", desc: "Built-in types for basic values.",
+        code: `<kw>let</kw> s: <ty>string</ty> = <str>"hello"</str>;
+<kw>let</kw> n: <ty>number</ty> = 42;
+<kw>let</kw> b: <ty>boolean</ty> = <kw>false</kw>;
+<kw>let</kw> bi: <ty>bigint</ty> = <nm>9007199254740991n</nm>;
+<kw>let</kw> sym: <ty>symbol</ty> = Symbol(<str>"id"</str>);
+<kw>let</kw> u: <ty>undefined</ty> = <kw>undefined</kw>;
+<kw>let</kw> nil: <ty>null</ty> = <kw>null</kw>;` },
+      { name: "any, unknown, never, void", desc: "Special types with distinct roles.",
+        code: `<kw>let</kw> a: <ty>any</ty> = <str>"anything goes"</str>;   <cmt>// opt-out of type checks</cmt>
+<kw>let</kw> u: <ty>unknown</ty> = getData();        <cmt>// safe: must narrow first</cmt>
+<kw>if</kw> (<kw>typeof</kw> u === <str>"string"</str>) u.toUpperCase();
+
+<kw>function</kw> <fn>fail</fn>(msg: <ty>string</ty>): <ty>never</ty> {
+  <kw>throw new</kw> Error(msg);               <cmt>// never returns</cmt>
+}
+<kw>function</kw> <fn>log</fn>(x: <ty>string</ty>): <ty>void</ty> {
+  console.<fn>log</fn>(x);                    <cmt>// no return value</cmt>
+}` },
+      { name: "Type Inference", desc: "TypeScript deduces types automatically.",
+        code: `<kw>let</kw> count = <nm>0</nm>;         <cmt>// inferred: number</cmt>
+<kw>let</kw> items = [<str>"a"</str>, <str>"b"</str>]; <cmt>// inferred: string[]</cmt>
+
+<kw>function</kw> <fn>double</fn>(x: <ty>number</ty>) {
+  <kw>return</kw> x * <nm>2</nm>;            <cmt>// inferred return: number</cmt>
+}` },
+    ]
+  },
+  {
+    section: "Data Structures",
+    tag: "types", tagLabel: "Data",
+    cards: [
+      { name: "Arrays & Tuples", desc: "Typed arrays and fixed-length tuples.",
+        code: `<kw>const</kw> nums: <ty>number</ty>[] = [<nm>1</nm>, <nm>2</nm>, <nm>3</nm>];
+<kw>const</kw> strs: <ty>Array</ty><<ty>string</ty>> = [<str>"a"</str>, <str>"b"</str>];
+
+<cmt>// Tuple: fixed structure</cmt>
+<kw>const</kw> pair: [<ty>string</ty>, <ty>number</ty>] = [<str>"age"</str>, <nm>30</nm>];
+<kw>const</kw> [label, val] = pair;
+
+<cmt>// Readonly tuple</cmt>
+<kw>const</kw> point: <kw>readonly</kw> [<ty>number</ty>, <ty>number</ty>] = [<nm>0</nm>, <nm>0</nm>];` },
+      { name: "Type Aliases", desc: "Name custom shapes with the type keyword.",
+        code: `<kw>type</kw> <ty>User</ty> = {
+  id: <ty>number</ty>;
+  name: <ty>string</ty>;
+  email?: <ty>string</ty>;  <cmt>// optional</cmt>
+};
+
+<kw>type</kw> <ty>ID</ty> = <ty>string</ty> | <ty>number</ty>;  <cmt>// union alias</cmt>
+<kw>type</kw> <ty>Point</ty> = { x: <ty>number</ty>; y: <ty>number</ty> };` },
+      { name: "Interfaces", desc: "Define object contracts; support extension.",
+        code: `<kw>interface</kw> <ty>Animal</ty> {
+  name: <ty>string</ty>;
+  <fn>sound</fn>(): <ty>string</ty>;
+}
+
+<kw>interface</kw> <ty>Dog</ty> <kw>extends</kw> <ty>Animal</ty> {
+  breed: <ty>string</ty>;
+}
+
+<kw>const</kw> dog: <ty>Dog</ty> = {
+  name: <str>"Rex"</str>, breed: <str>"Lab"</str>,
+  <fn>sound</fn>() { <kw>return</kw> <str>"Woof"</str>; }
+};` },
+      { name: "Enums", desc: "Named sets of constants.",
+        code: `<kw>enum</kw> <ty>Direction</ty> { Up, Down, Left, Right }
+<kw>const</kw> dir = <ty>Direction</ty>.Up;  <cmt>// 0</cmt>
+
+<kw>enum</kw> <ty>Status</ty> {
+  Active = <str>"ACTIVE"</str>,
+  Inactive = <str>"INACTIVE"</str>,
+}
+
+<cmt>// const enum — no runtime object</cmt>
+<kw>const enum</kw> <ty>Size</ty> { Small = <nm>1</nm>, Medium, Large }` },
+    ]
+  },
+  {
+    section: "Functions",
+    tag: "fn", tagLabel: "Functions",
+    cards: [
+      { name: "Typed Functions", desc: "Parameters, return types, optional and default.",
+        code: `<kw>function</kw> <fn>add</fn>(a: <ty>number</ty>, b: <ty>number</ty>): <ty>number</ty> {
+  <kw>return</kw> a + b;
+}
+
+<cmt>// Optional parameter</cmt>
+<kw>function</kw> <fn>greet</fn>(name: <ty>string</ty>, title?: <ty>string</ty>): <ty>string</ty> {
+  <kw>return</kw> <str>\`\${title ?? <str>""</str>} \${name}\`</str>.trim();
+}
+
+<cmt>// Default parameter</cmt>
+<kw>function</kw> <fn>repeat</fn>(s: <ty>string</ty>, n: <ty>number</ty> = <nm>1</nm>) {
+  <kw>return</kw> s.repeat(n);
+}` },
+      { name: "Rest & Overloads", desc: "Variadic args and multiple signatures.",
+        code: `<cmt>// Rest parameters</cmt>
+<kw>function</kw> <fn>sum</fn>(...nums: <ty>number</ty>[]): <ty>number</ty> {
+  <kw>return</kw> nums.reduce((a, b) => a + b, <nm>0</nm>);
+}
+
+<cmt>// Overloads</cmt>
+<kw>function</kw> <fn>parse</fn>(x: <ty>string</ty>): <ty>number</ty>;
+<kw>function</kw> <fn>parse</fn>(x: <ty>number</ty>[]): <ty>string</ty>;
+<kw>function</kw> <fn>parse</fn>(x: <ty>any</ty>): <ty>any</ty> {
+  <kw>return</kw> <kw>typeof</kw> x === <str>"string"</str> ? +x : x.join();
+}` },
+      { name: "Function Types", desc: "Type function shapes with signatures.",
+        code: `<kw>type</kw> <ty>Adder</ty> = (a: <ty>number</ty>, b: <ty>number</ty>) => <ty>number</ty>;
+
+<kw>const</kw> add: <ty>Adder</ty> = (a, b) => a + b;
+
+<cmt>// As interface property</cmt>
+<kw>interface</kw> <ty>Formatter</ty> {
+  <fn>format</fn>(value: <ty>string</ty>): <ty>string</ty>;
+}
+
+<cmt>// Higher-order</cmt>
+<kw>function</kw> <fn>apply</fn>(fn: (<ty>x</ty>: <ty>number</ty>) => <ty>number</ty>, val: <ty>number</ty>) {
+  <kw>return</kw> fn(val);
+}` },
+    ]
+  },
+  {
+    section: "Type Manipulation",
+    tag: "types", tagLabel: "Types",
+    cards: [
+      { name: "Union & Intersection", desc: "Combine types with | and &.",
+        code: `<cmt>// Union: one of several types</cmt>
+<kw>type</kw> <ty>ID</ty> = <ty>string</ty> | <ty>number</ty>;
+<kw>function</kw> <fn>printId</fn>(id: <ty>ID</ty>) {
+  console.<fn>log</fn>(<str>\`ID: \${id}\`</str>);
+}
+
+<cmt>// Intersection: all of several types</cmt>
+<kw>type</kw> <ty>Named</ty> = { name: <ty>string</ty> };
+<kw>type</kw> <ty>Aged</ty>  = { age: <ty>number</ty> };
+<kw>type</kw> <ty>Person</ty> = <ty>Named</ty> & <ty>Aged</ty>;
+
+<kw>const</kw> p: <ty>Person</ty> = { name: <str>"Ana"</str>, age: <nm>25</nm> };` },
+      { name: "Literal Types", desc: "Restrict to exact values.",
+        code: `<kw>type</kw> <ty>Dir</ty>  = <str>"left"</str> | <str>"right"</str> | <str>"up"</str> | <str>"down"</str>;
+<kw>type</kw> <ty>Dice</ty> = <nm>1</nm> | <nm>2</nm> | <nm>3</nm> | <nm>4</nm> | <nm>5</nm> | <nm>6</nm>;
+
+<kw>function</kw> <fn>move</fn>(dir: <ty>Dir</ty>) { console.<fn>log</fn>(dir); }
+move(<str>"left"</str>);  <cmt>// OK</cmt>
+<cmt>// move("diagonal"); // Error</cmt>
+
+<cmt>// const assertion widens to literal</cmt>
+<kw>const</kw> cfg = { env: <str>"prod"</str> } <kw>as const</kw>;
+<cmt>// cfg.env → "prod" (not string)</cmt>` },
+      { name: "Type Narrowing", desc: "Narrow union types to specific branches.",
+        code: `<kw>function</kw> <fn>process</fn>(x: <ty>string</ty> | <ty>number</ty>) {
+  <kw>if</kw> (<kw>typeof</kw> x === <str>"string"</str>) {
+    console.<fn>log</fn>(x.toUpperCase()); <cmt>// string</cmt>
+  } <kw>else</kw> {
+    console.<fn>log</fn>(x.toFixed(<nm>2</nm>));  <cmt>// number</cmt>
+  }
+}
+
+<cmt>// Discriminated union</cmt>
+<kw>type</kw> <ty>Shape</ty> =
+  | { kind: <str>"circle"</str>;  radius: <ty>number</ty> }
+  | { kind: <str>"square"</str>;  side: <ty>number</ty> };
+
+<kw>function</kw> <fn>area</fn>(s: <ty>Shape</ty>) {
+  <kw>if</kw> (s.kind === <str>"circle"</str>) <kw>return</kw> Math.PI * s.radius ** <nm>2</nm>;
+  <kw>return</kw> s.side ** <nm>2</nm>;
+}` },
+      { name: "Type Assertions", desc: "Override the inferred type when you know better.",
+        code: `<kw>const</kw> el = document.<fn>getElementById</fn>(<str>"box"</str>) <kw>as</kw> <ty>HTMLInputElement</ty>;
+el.value = <str>"hello"</str>;
+
+<cmt>// Non-null assertion !</cmt>
+<kw>const</kw> root = document.<fn>getElementById</fn>(<str>"root"</str>)!;
+
+<cmt>// Double assertion (use sparingly)</cmt>
+<kw>const</kw> x = someVal <kw>as unknown as</kw> <ty>string</ty>;` },
+    ]
+  },
+  {
+    section: "Generics",
+    tag: "generic", tagLabel: "Generics",
+    cards: [
+      { name: "Generic Functions", desc: "Write reusable functions with type parameters.",
+        code: `<kw>function</kw> <fn>identity</fn><<ty>T</ty>>(arg: <ty>T</ty>): <ty>T</ty> {
+  <kw>return</kw> arg;
+}
+identity(<str>"hello"</str>);  <cmt>// T = string</cmt>
+identity(<nm>42</nm>);       <cmt>// T = number</cmt>
+
+<cmt>// Multiple type params</cmt>
+<kw>function</kw> <fn>pair</fn><<ty>A</ty>, <ty>B</ty>>(a: <ty>A</ty>, b: <ty>B</ty>): [<ty>A</ty>, <ty>B</ty>] {
+  <kw>return</kw> [a, b];
+}` },
+      { name: "Generic Interfaces", desc: "Parameterize interfaces and type aliases.",
+        code: `<kw>interface</kw> <ty>Box</ty><<ty>T</ty>> {
+  value: <ty>T</ty>;
+  <fn>unwrap</fn>(): <ty>T</ty>;
+}
+
+<kw>type</kw> <ty>Maybe</ty><<ty>T</ty>> = <ty>T</ty> | <kw>null</kw> | <kw>undefined</kw>;
+
+<kw>type</kw> <ty>ApiResponse</ty><<ty>T</ty>> = {
+  data: <ty>T</ty>;
+  status: <ty>number</ty>;
+  message: <ty>string</ty>;
+};` },
+      { name: "Generic Constraints", desc: "Restrict type parameters with extends.",
+        code: `<kw>function</kw> <fn>getLength</fn><<ty>T</ty> <kw>extends</kw> { length: <ty>number</ty> }>(arg: <ty>T</ty>): <ty>number</ty> {
+  <kw>return</kw> arg.length;
+}
+<fn>getLength</fn>(<str>"hello"</str>); <cmt>// 5</cmt>
+<fn>getLength</fn>([<nm>1</nm>,<nm>2</nm>,<nm>3</nm>]); <cmt>// 3</cmt>
+
+<cmt>// keyof constraint</cmt>
+<kw>function</kw> <fn>getProp</fn><<ty>T</ty>, <ty>K</ty> <kw>extends keyof</kw> <ty>T</ty>>(obj: <ty>T</ty>, key: <ty>K</ty>): <ty>T</ty>[<ty>K</ty>] {
+  <kw>return</kw> obj[key];
+}` },
+      { name: "Default Generic Types", desc: "Provide fallback type parameters.",
+        code: `<kw>interface</kw> <ty>Container</ty><<ty>T</ty> = <ty>string</ty>> {
+  value: <ty>T</ty>;
+}
+
+<kw>const</kw> c1: <ty>Container</ty>        = { value: <str>"hi"</str> }; <cmt>// T = string</cmt>
+<kw>const</kw> c2: <ty>Container</ty><<ty>number</ty>> = { value: <nm>42</nm> };   <cmt>// T = number</cmt>
+
+<kw>type</kw> <ty>WithId</ty><<ty>T</ty>, <ty>Id</ty> = <ty>number</ty>> = <ty>T</ty> & { id: <ty>Id</ty> };
+<kw>type</kw> <ty>UserRow</ty> = <ty>WithId</ty><{ name: <ty>string</ty> }>;` },
+    ]
+  },
+  {
+    section: "Classes & OOP",
+    tag: "class", tagLabel: "Classes",
+    cards: [
+      { name: "Typed Classes", desc: "Properties, constructor, access modifiers.",
+        code: `<kw>class</kw> <ty>Person</ty> {
+  <kw>readonly</kw> id: <ty>number</ty>;
+  <kw>public</kw>   name: <ty>string</ty>;
+  <kw>private</kw>  _age: <ty>number</ty>;
+  <kw>protected</kw> dept: <ty>string</ty>;
+
+  <kw>constructor</kw>(id: <ty>number</ty>, name: <ty>string</ty>, age: <ty>number</ty>) {
+    <kw>this</kw>.id = id; <kw>this</kw>.name = name; <kw>this</kw>._age = age;
+  }
+
+  <kw>get</kw> <fn>age</fn>() { <kw>return this</kw>._age; }
+}` },
+      { name: "Implements & Abstract", desc: "Contracts and abstract base classes.",
+        code: `<kw>interface</kw> <ty>Serializable</ty> {
+  <fn>serialize</fn>(): <ty>string</ty>;
+}
+
+<kw>abstract class</kw> <ty>Shape</ty> {
+  <kw>abstract</kw> <fn>area</fn>(): <ty>number</ty>;
+  <fn>describe</fn>() { <kw>return</kw> <str>\`Area: \${<kw>this</kw>.area()}\`</str>; }
+}
+
+<kw>class</kw> <ty>Circle</ty> <kw>extends</kw> <ty>Shape</ty> <kw>implements</kw> <ty>Serializable</ty> {
+  <kw>constructor</kw>(<kw>public</kw> r: <ty>number</ty>) { <kw>super</kw>(); }
+  <fn>area</fn>() { <kw>return</kw> Math.PI * <kw>this</kw>.r ** <nm>2</nm>; }
+  <fn>serialize</fn>() { <kw>return</kw> JSON.stringify({ r: <kw>this</kw>.r }); }
+}` },
+      { name: "Parameter Properties", desc: "Shorthand to declare and assign in constructor.",
+        code: `<cmt>// Verbose version</cmt>
+<kw>class</kw> <ty>Point</ty> {
+  x: <ty>number</ty>; y: <ty>number</ty>;
+  <kw>constructor</kw>(x: <ty>number</ty>, y: <ty>number</ty>) { <kw>this</kw>.x=x; <kw>this</kw>.y=y; }
+}
+
+<cmt>// Shorthand version</cmt>
+<kw>class</kw> <ty>Point</ty> {
+  <kw>constructor</kw>(
+    <kw>public readonly</kw> x: <ty>number</ty>,
+    <kw>public readonly</kw> y: <ty>number</ty>,
+  ) {}
+}` },
+    ]
+  },
+  {
+    section: "Utility Types",
+    tag: "util", tagLabel: "Utility Types",
+    cards: [
+      { name: "Partial, Required, Readonly", desc: "Transform all properties at once.",
+        code: `<kw>type</kw> <ty>User</ty> = { id: <ty>number</ty>; name: <ty>string</ty>; email: <ty>string</ty> };
+
+<kw>type</kw> <ty>PartialUser</ty>  = <ty>Partial</ty><<ty>User</ty>>;   <cmt>// all optional</cmt>
+<kw>type</kw> <ty>RequiredUser</ty> = <ty>Required</ty><<ty>User</ty>>;   <cmt>// all required</cmt>
+<kw>type</kw> <ty>FrozenUser</ty>   = <ty>Readonly</ty><<ty>User</ty>>;   <cmt>// all readonly</cmt>
+
+<cmt>// Common use: update function</cmt>
+<kw>function</kw> <fn>update</fn>(user: <ty>User</ty>, patch: <ty>Partial</ty><<ty>User</ty>>): <ty>User</ty> {
+  <kw>return</kw> { ...user, ...patch };
+}` },
+      { name: "Pick, Omit, Record", desc: "Select or exclude keys; build index types.",
+        code: `<kw>type</kw> <ty>User</ty> = { id: <ty>number</ty>; name: <ty>string</ty>; age: <ty>number</ty> };
+
+<kw>type</kw> <ty>Preview</ty>  = <ty>Pick</ty><<ty>User</ty>, <str>"id"</str> | <str>"name"</str>>;    <cmt>// id, name</cmt>
+<kw>type</kw> <ty>NoAge</ty>    = <ty>Omit</ty><<ty>User</ty>, <str>"age"</str>>;           <cmt>// id, name</cmt>
+
+<cmt>// Record: map keys to type</cmt>
+<kw>type</kw> <ty>RoleMap</ty>   = <ty>Record</ty><<str>"admin"</str>|<str>"user"</str>, <ty>boolean</ty>>;
+<kw>const</kw> roles: <ty>RoleMap</ty> = { admin: <kw>true</kw>, user: <kw>false</kw> };` },
+      { name: "Exclude, Extract, ReturnType", desc: "Derive types from other types.",
+        code: `<kw>type</kw> <ty>T</ty> = <ty>Exclude</ty><<ty>string</ty>|<ty>number</ty>|<ty>boolean</ty>, <ty>boolean</ty>>;
+<cmt>// → string | number</cmt>
+
+<kw>type</kw> <ty>U</ty> = <ty>Extract</ty><<ty>string</ty>|<ty>number</ty>|<ty>boolean</ty>, <ty>string</ty>|<ty>number</ty>>;
+<cmt>// → string | number</cmt>
+
+<kw>function</kw> <fn>getUser</fn>() { <kw>return</kw> { id: <nm>1</nm>, name: <str>"Ana"</str> }; }
+<kw>type</kw> <ty>UserShape</ty> = <ty>ReturnType</ty><<kw>typeof</kw> getUser>;
+<cmt>// → { id: number; name: string }</cmt>
+
+<kw>type</kw> <ty>Params</ty> = <ty>Parameters</ty><<kw>typeof</kw> getUser>; <cmt>// []</cmt>` },
+      { name: "Awaited, NonNullable", desc: "Unwrap promises; remove null/undefined.",
+        code: `<cmt>// Awaited: unwrap Promise type</cmt>
+<kw>type</kw> <ty>P</ty> = <ty>Promise</ty><<ty>string</ty>>;
+<kw>type</kw> <ty>V</ty> = <ty>Awaited</ty><<ty>P</ty>>;   <cmt>// → string</cmt>
+
+<cmt>// NonNullable: remove null/undefined</cmt>
+<kw>type</kw> <ty>MaybeStr</ty> = <ty>string</ty> | <kw>null</kw> | <kw>undefined</kw>;
+<kw>type</kw> <ty>Str</ty> = <ty>NonNullable</ty><<ty>MaybeStr</ty>>;  <cmt>// → string</cmt>
+
+<cmt>// ConstructorParameters</cmt>
+<kw>class</kw> <ty>Logger</ty> { <kw>constructor</kw>(level: <ty>string</ty>, prefix: <ty>string</ty>) {} }
+<kw>type</kw> <ty>Args</ty> = <ty>ConstructorParameters</ty><<kw>typeof</kw> <ty>Logger</ty>>; <cmt>// [string, string]</cmt>` },
+    ]
+  },
+  {
+    section: "Advanced Types",
+    tag: "adv", tagLabel: "Advanced",
+    cards: [
+      { name: "Mapped Types", desc: "Transform each key of a type systematically.",
+        code: `<cmt>// Make all properties optional flags</cmt>
+<kw>type</kw> <ty>Flags</ty><<ty>T</ty>> = { [<ty>K</ty> <kw>in keyof</kw> <ty>T</ty>]: <ty>boolean</ty> };
+
+<kw>type</kw> <ty>User</ty> = { name: <ty>string</ty>; age: <ty>number</ty> };
+<kw>type</kw> <ty>UserFlags</ty> = <ty>Flags</ty><<ty>User</ty>>;
+<cmt>// → { name: boolean; age: boolean }</cmt>
+
+<cmt>// Add readonly to all keys</cmt>
+<kw>type</kw> <ty>Immutable</ty><<ty>T</ty>> = {
+  <kw>readonly</kw> [<ty>K</ty> <kw>in keyof</kw> <ty>T</ty>]: <ty>T</ty>[<ty>K</ty>];
+};` },
+      { name: "Conditional Types", desc: "Choose types based on conditions.",
+        code: `<kw>type</kw> <ty>IsString</ty><<ty>T</ty>> = <ty>T</ty> <kw>extends</kw> <ty>string</ty> ? <str>"yes"</str> : <str>"no"</str>;
+
+<kw>type</kw> <ty>A</ty> = <ty>IsString</ty><<ty>string</ty>>;  <cmt>// "yes"</cmt>
+<kw>type</kw> <ty>B</ty> = <ty>IsString</ty><<ty>number</ty>>;  <cmt>// "no"</cmt>
+
+<cmt>// Conditional with infer</cmt>
+<kw>type</kw> <ty>Unwrap</ty><<ty>T</ty>> = <ty>T</ty> <kw>extends</kw> <ty>Array</ty><<kw>infer</kw> <ty>U</ty>> ? <ty>U</ty> : <ty>T</ty>;
+<kw>type</kw> <ty>Num</ty> = <ty>Unwrap</ty><<ty>number</ty>[]>;  <cmt>// number</cmt>
+<kw>type</kw> <ty>Str</ty> = <ty>Unwrap</ty><<ty>string</ty>>;   <cmt>// string</cmt>` },
+      { name: "Template Literal Types", desc: "Build string types from patterns.",
+        code: `<kw>type</kw> <ty>EventName</ty><<ty>T</ty> <kw>extends</kw> <ty>string</ty>> = <str>\`on\${Capitalize<<ty>T</ty>>}\`</str>;
+
+<kw>type</kw> <ty>ClickEvent</ty> = <ty>EventName</ty><<str>"click"</str>>;   <cmt>// "onClick"</cmt>
+
+<kw>type</kw> <ty>Dir</ty>  = <str>"top"</str> | <str>"bottom"</str> | <str>"left"</str> | <str>"right"</str>;
+<kw>type</kw> <ty>CSSProp</ty> = <str>\`margin-\${<ty>Dir</ty>}\`</str>;
+<cmt>// "margin-top" | "margin-bottom" | ...</cmt>
+
+<kw>type</kw> <ty>Getter</ty><<ty>T</ty> <kw>extends</kw> <ty>string</ty>> = <str>\`get\${Capitalize<<ty>T</ty>>}\`</str>;` },
+      { name: "Index Signatures & keyof/typeof", desc: "Dynamic keys and type introspection operators.",
+        code: `<cmt>// Index signature</cmt>
+<kw>interface</kw> <ty>Dict</ty> {
+  [key: <ty>string</ty>]: <ty>number</ty>;
+}
+<kw>const</kw> d: <ty>Dict</ty> = { a: <nm>1</nm>, b: <nm>2</nm> };
+
+<cmt>// keyof — union of property keys</cmt>
+<kw>type</kw> <ty>UserKeys</ty> = <kw>keyof</kw> { name: <ty>string</ty>; age: <ty>number</ty> };
+<cmt>// → "name" | "age"</cmt>
+
+<cmt>// typeof — infer type from a value</cmt>
+<kw>const</kw> config = { debug: <kw>true</kw>, port: <nm>3000</nm> };
+<kw>type</kw> <ty>Config</ty> = <kw>typeof</kw> config;
+<cmt>// → { debug: boolean; port: number }</cmt>` },
+      { name: "Infer Keyword", desc: "Extract types inside conditional types.",
+        code: `<cmt>// Extract first argument of a function</cmt>
+<kw>type</kw> <ty>FirstArg</ty><<ty>T</ty>> =
+  <ty>T</ty> <kw>extends</kw> (first: <kw>infer</kw> <ty>A</ty>, ...rest: <ty>any</ty>[]) => <ty>any</ty>
+    ? <ty>A</ty> : <kw>never</kw>;
+
+<kw>type</kw> <ty>FA</ty> = <ty>FirstArg</ty><(<ty>x</ty>: <ty>string</ty>, <ty>y</ty>: <ty>number</ty>) => <kw>void</kw>>;
+<cmt>// → string</cmt>
+
+<cmt>// Extract Promise inner type</cmt>
+<kw>type</kw> <ty>Resolved</ty><<ty>T</ty>> = <ty>T</ty> <kw>extends</kw> <ty>Promise</ty><<kw>infer</kw> <ty>R</ty>> ? <ty>R</ty> : <ty>T</ty>;` },
+      { name: "Type Guards", desc: "Narrow types using custom predicates.",
+        code: `<cmt>// is predicate</cmt>
+<kw>function</kw> <fn>isString</fn>(x: <ty>unknown</ty>): x <kw>is</kw> <ty>string</ty> {
+  <kw>return typeof</kw> x === <str>"string"</str>;
+}
+
+<cmt>// Assertion function</cmt>
+<kw>function</kw> <fn>assertDefined</fn><<ty>T</ty>>(
+  x: <ty>T</ty> | <kw>undefined</kw>
+): <kw>asserts</kw> x <kw>is</kw> <ty>T</ty> {
+  <kw>if</kw> (x === <kw>undefined</kw>) <kw>throw new</kw> Error(<str>"undefined"</str>);
+}
+
+<cmt>// in operator guard</cmt>
+<kw>if</kw> (<str>"name"</str> <kw>in</kw> obj) { <cmt>/* obj has name */</cmt> }` },
+    ]
+  },
+  {
+    section: "Modules & Configuration",
+    tag: "module", tagLabel: "Modules",
+    cards: [
+      { name: "ES Modules", desc: "Import and export in TypeScript.",
+        code: `<cmt>// Named exports</cmt>
+<kw>export const</kw> PI = <nm>3.14</nm>;
+<kw>export function</kw> <fn>square</fn>(n: <ty>number</ty>) { <kw>return</kw> n * n; }
+<kw>export type</kw> { <ty>User</ty> };     <cmt>// type-only export</cmt>
+
+<cmt>// Default export</cmt>
+<kw>export default class</kw> <ty>App</ty> { ... }
+
+<cmt>// Imports</cmt>
+<kw>import</kw> { PI, <fn>square</fn> } <kw>from</kw> <str>"./math"</str>;
+<kw>import type</kw> { <ty>User</ty> }   <kw>from</kw> <str>"./types"</str>;
+<kw>import</kw> App             <kw>from</kw> <str>"./app"</str>;` },
+      { name: "tsconfig.json", desc: "Key compiler options to know.",
+        code: `{
+  <str>"compilerOptions"</str>: {
+    <str>"strict"</str>: <kw>true</kw>,           <cmt>// enable all strict checks</cmt>
+    <str>"target"</str>: <str>"ES2022"</str>,      <cmt>// output JS version</cmt>
+    <str>"module"</str>: <str>"NodeNext"</str>,    <cmt>// module system</cmt>
+    <str>"outDir"</str>: <str>"./dist"</str>,      <cmt>// output directory</cmt>
+    <str>"rootDir"</str>: <str>"./src"</str>,      <cmt>// source root</cmt>
+    <str>"paths"</str>: {                 <cmt>// path aliases</cmt>
+      <str>"@/*"</str>: [<str>"./src/*"</str>]
+    },
+    <str>"noUncheckedIndexedAccess"</str>: <kw>true</kw>
+  }
+}` },
+      { name: "Declaration Files (.d.ts)", desc: "Provide types for plain JS libraries.",
+        code: `<cmt>// math.d.ts — types for math.js</cmt>
+<kw>declare function</kw> <fn>add</fn>(a: <ty>number</ty>, b: <ty>number</ty>): <ty>number</ty>;
+<kw>declare const</kw> PI: <ty>number</ty>;
+
+<cmt>// Augment an existing module</cmt>
+<kw>declare module</kw> <str>"express"</str> {
+  <kw>interface</kw> <ty>Request</ty> {
+    user?: { id: <ty>string</ty>; role: <ty>string</ty> };
+  }
+}
+
+<cmt>// Install community types</cmt>
+<cmt>// npm install -D @types/node</cmt>` },
+    ]
+  },
+  {
+    section: "Async & Practical",
+    tag: "async", tagLabel: "Async",
+    cards: [
+      { name: "Typing async/await", desc: "Annotate Promises and async functions.",
+        code: `<kw>async function</kw> <fn>fetchUser</fn>(id: <ty>number</ty>): <ty>Promise</ty><<ty>User</ty>> {
+  <kw>const</kw> res = <kw>await</kw> fetch(<str>\`/users/\${id}\`</str>);
+  <kw>return</kw> res.json() <kw>as</kw> <ty>Promise</ty><<ty>User</ty>>;
+}
+
+<cmt>// Error handling with types</cmt>
+<kw>try</kw> {
+  <kw>const</kw> user = <kw>await</kw> <fn>fetchUser</fn>(<nm>1</nm>);
+  console.<fn>log</fn>(user.name);
+} <kw>catch</kw> (err: <kw>unknown</kw>) {
+  <kw>if</kw> (err <kw>instanceof</kw> Error) console.<fn>log</fn>(err.message);
+}` },
+      { name: "Type-Safe API Responses", desc: "Model API shapes and validate at runtime.",
+        code: `<kw>type</kw> <ty>ApiResult</ty><<ty>T</ty>> =
+  | { ok: <kw>true</kw>;  data: <ty>T</ty> }
+  | { ok: <kw>false</kw>; error: <ty>string</ty> };
+
+<kw>async function</kw> <fn>safeGet</fn><<ty>T</ty>>(url: <ty>string</ty>): <ty>Promise</ty><<ty>ApiResult</ty><<ty>T</ty>>> {
+  <kw>try</kw> {
+    <kw>const</kw> res = <kw>await</kw> fetch(url);
+    <kw>const</kw> data = <kw>await</kw> res.json();
+    <kw>return</kw> { ok: <kw>true</kw>, data };
+  } <kw>catch</kw> (e: <kw>unknown</kw>) {
+    <kw>return</kw> { ok: <kw>false</kw>, error: <str>"failed"</str> };
+  }
+}` },
+      { name: "Typing React with TS", desc: "Common patterns for React + TypeScript.",
+        code: `<kw>interface</kw> <ty>ButtonProps</ty> {
+  label: <ty>string</ty>;
+  onClick: () => <ty>void</ty>;
+  disabled?: <ty>boolean</ty>;
+}
+
+<kw>const</kw> <fn>Button</fn> = ({ label, onClick, disabled = <kw>false</kw> }: <ty>ButtonProps</ty>) => (
+  <<ty>button</ty> onClick={onClick} disabled={disabled}>{label}</<ty>button</ty>>
+);
+
+<cmt>// useState with generic</cmt>
+<kw>const</kw> [user, setUser] = useState<<ty>User</ty> | <kw>null</kw>>(<kw>null</kw>);
+<cmt>// useRef with element</cmt>
+<kw>const</kw> ref = useRef<<ty>HTMLInputElement</ty>>(<kw>null</kw>);` },
+    ]
+  },
+];
+
+const SECTIONS = ["All", ...DATA.map(d => d.tagLabel)];
+
+function highlight(code) {
+  return code
+    .replace(/<kw>(.*?)<\/kw>/g,  '<span class="kw">$1</span>')
+    .replace(/<ty>(.*?)<\/ty>/g,  '<span class="ty">$1</span>')
+    .replace(/<str>(.*?)<\/str>/g,'<span class="str">$1</span>')
+    .replace(/<fn>(.*?)<\/fn>/g,  '<span class="fn">$1</span>')
+    .replace(/<nm>(.*?)<\/nm>/g,  '<span class="nm">$1</span>')
+    .replace(/<cmt>(.*?)<\/cmt>/g,'<span class="cmt">$1</span>');
+}
+
+let activeTag = "All";
+let query = "";
+
+function render() {
+  const content = document.getElementById("content");
+  const filtered = DATA.map(section => {
+    const cards = section.cards.filter(c => {
+      const tagOk = activeTag === "All" || section.tagLabel === activeTag;
+      if (!tagOk) return false;
+      if (!query) return true;
+      const q = query.toLowerCase();
+      return c.name.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
+    });
+    return { ...section, cards };
+  }).filter(s => s.cards.length > 0);
+
+  if (filtered.length === 0) {
+    content.innerHTML = `<div class="no-results">No concepts found for "<strong>${query}</strong>"</div>`;
+    return;
+  }
+
+  content.innerHTML = filtered.map(section => `
+    <div class="cs-section">
+      <div class="cs-section-title">${section.section}</div>
+      <div class="cs-grid">
+        ${section.cards.map(card => `
+          <div class="cs-card">
+            <div class="cs-card-head">
+              <span class="cs-card-tag tag-${section.tag}">${section.tagLabel}</span>
+              <span class="cs-card-name">${card.name}</span>
+            </div>
+            <div class="cs-card-desc">${card.desc}</div>
+            <pre>${highlight(card.code)}</pre>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function buildTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = SECTIONS.map(s => `
+    <button class="cs-tab${s === activeTag ? " active" : ""}" data-tag="${s}">${s}</button>
+  `).join("");
+
+  tabs.addEventListener("click", e => {
+    const btn = e.target.closest(".cs-tab");
+    if (!btn) return;
+    activeTag = btn.dataset.tag;
+    document.querySelectorAll(".cs-tab").forEach(t => t.classList.toggle("active", t.dataset.tag === activeTag));
+    render();
+  });
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  query = e.target.value.trim();
+  render();
+});
+
+buildTabs();
+render();
+</script>
